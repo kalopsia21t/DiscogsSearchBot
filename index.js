@@ -21,17 +21,7 @@ bot.on("inline_query", (context) => {
     };
   }, {});
 
-  console.log(params);
-
   db.search(params, (err, data) => {
-    const chosen = data.results.find((item) => {
-      return (
-        item.title.includes(params.title) &&
-        item.title.includes(params.release_title)
-      );
-    });
-    console.log(chosen);
-
     const results = data.results.map(({ title, uri, id, thumb }) => {
       console.log(`${process.env.DISCOGS_BASE_URI}${uri}`);
       return {

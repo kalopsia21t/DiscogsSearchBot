@@ -11,9 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "disconnect": "^1.2.2",
-    "dotenv": "^16.0.3",
-    "telegraf": "^4.12.2",
-    "typescript": "^5.0.4"
+    "disconnect": "1.2.2",
+    "dotenv": "16.0.3",
+    "telegraf": "4.12.2",
+    "typescript": "5.0.4"
   }
 }
