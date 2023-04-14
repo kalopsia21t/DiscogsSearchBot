@@ -1,7 +1,8 @@
-const { Telegraf, Markup } = require("telegraf");
-const Discogs = require("disconnect").Client;
+import { Telegraf, Markup } from "telegraf";
+import { Client as Discogs } from "disconnect";
+import * as dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -23,7 +24,6 @@ bot.on("inline_query", (context) => {
 
   db.search(params, (err, data) => {
     const results = data.results.map(({ title, uri, id, thumb }) => {
-      console.log(`${process.env.DISCOGS_BASE_URI}${uri}`);
       return {
         type: "article",
         id: id,
