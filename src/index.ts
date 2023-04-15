@@ -22,27 +22,30 @@ bot.on("inline_query", (context) => {
     };
   }, {});
 
-  db.search(params, (err, data) => {
-    const results = data.results.map(({ title, uri, id, thumb }) => {
-      return {
-        type: "article",
-        id: id,
-        title: title,
-        description: title,
-        thumb_url: thumb,
-        input_message_content: {
-          message_text: title,
-        },
-        ...Markup.inlineKeyboard([
-          Markup.button.url(
-            "Go to record",
-            `${process.env.DISCOGS_BASE_URI}${uri}`
-          ),
-        ]),
-      };
-    });
+  db.search(params, async (err, data) => {
+    const results = data.results.map(
+      ({ title, uri, id, thumb, year, style, label, ...rest }) => {
+        console.log(rest);
+        return {
+          type: "article",
+          id: id,
+          title: title,
+          description: `${year}, ${style}, ${label.toString()}`,
+          thumb_url: thumb,
+          input_message_content: {
+            message_text: title,
+          },
+          ...Markup.inlineKeyboard([
+            Markup.button.url(
+              "Go to record",
+              `${process.env.DISCOGS_BASE_URI}${uri}`
+            ),
+          ]),
+        };
+      }
+    );
 
-    return context.answerInlineQuery(results).catch((err) => {
+    return await context.answerInlineQuery(results).catch((err) => {
       console.log(err);
     });
   });

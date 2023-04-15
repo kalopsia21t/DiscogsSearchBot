@@ -14,7 +14,7 @@
   "dependencies": {
     "disconnect": "1.2.2",
     "dotenv": "16.0.3",
-    "telegraf": "4.12.2",
+    "telegraf": "^4.12.3-canary.1",
     "typescript": "5.0.4"
   },
   "devDependencies": {
