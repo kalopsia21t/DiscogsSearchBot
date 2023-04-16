@@ -2,10 +2,10 @@
   "name": "DiscogsSearchBot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc -b",
-    "start": "node dist/index.js",
+    "start": "nodemon --watch src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,10 +14,18 @@
   "dependencies": {
     "disconnect": "1.2.2",
     "dotenv": "16.0.3",
+    "nodemon": "^2.0.22",
     "telegraf": "^4.12.3-canary.1",
-    "typescript": "5.0.4"
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "@types/node": "18.15.11"
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "execMap": {
+      "ts": "ts-node"
+    }
   }
 }

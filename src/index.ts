@@ -1,54 +1,38 @@
-import { Telegraf, Markup } from "telegraf";
+import { Telegraf, Markup, session } from "telegraf";
 import { Client as Discogs } from "disconnect";
-import * as dotenv from "dotenv";
 
-dotenv.config();
+import { ConfigService, IConfigService } from "./config";
+import { IBotContext } from "./context";
+import { Command } from "./commands";
+import { InlineQuery } from "./commands/inlineQuery";
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+import { IDiscogsDatabase } from "./discogs";
 
-const dis = new Discogs({ userToken: process.env.DISCOGS_ACCESS_TOKEN });
+interface IBot {
+  initialization(): void;
+}
 
-const db = dis.database();
+class Bot implements IBot {
+  bot: Telegraf<IBotContext>;
+  commands: Command[] = [];
+  db: IDiscogsDatabase = {};
+  constructor(private readonly configService: IConfigService) {
+    this.bot = new Telegraf<IBotContext>(this.configService.get("BOT_TOKEN"));
+    this.bot.use(session());
+    this.db = new Discogs({
+      userToken: this.configService.get("DISCOGS_ACCESS_TOKEN"),
+    }).database();
+  }
 
-const params_map = ["title", "release_title", "style"];
+  initialization() {
+    this.commands = [new InlineQuery(this.bot, this.db)];
+    for (const command of this.commands) {
+      command.handle();
+    }
+    this.bot.launch();
+  }
+}
 
-bot.on("inline_query", (context) => {
-  const query = context.update.inline_query.query;
-  const params = query.split(";").reduce((acc, item, index) => {
-    if (!params_map[index]) return { ...acc };
-    return {
-      ...acc,
-      [params_map[index]]: item.trim(),
-    };
-  }, {});
+const bot = new Bot(new ConfigService());
 
-  db.search(params, async (err, data) => {
-    const results = data.results.map(
-      ({ title, uri, id, thumb, year, style, label, ...rest }) => {
-        console.log(rest);
-        return {
-          type: "article",
-          id: id,
-          title: title,
-          description: `${year}, ${style}, ${label.toString()}`,
-          thumb_url: thumb,
-          input_message_content: {
-            message_text: title,
-          },
-          ...Markup.inlineKeyboard([
-            Markup.button.url(
-              "Go to record",
-              `${process.env.DISCOGS_BASE_URI}${uri}`
-            ),
-          ]),
-        };
-      }
-    );
-
-    return await context.answerInlineQuery(results).catch((err) => {
-      console.log(err);
-    });
-  });
-});
-
-bot.launch();
+bot.initialization();
