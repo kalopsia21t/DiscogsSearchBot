@@ -1,4 +1,4 @@
-import { Telegraf, session } from "telegraf";
+import { Telegraf } from "telegraf";
 import { Client as Discogs } from "disconnect";
 
 import { ConfigService, IConfigService } from "./config";
@@ -18,7 +18,6 @@ class Bot implements IBot {
   db: IDiscogsDatabase = {};
   constructor(private readonly configService: IConfigService) {
     this.bot = new Telegraf<IBotContext>(this.configService.get("BOT_TOKEN"));
-    this.bot.use(session());
     this.db = new Discogs({
       userToken: this.configService.get("DISCOGS_ACCESS_TOKEN"),
     }).database();
