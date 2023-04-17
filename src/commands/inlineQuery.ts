@@ -1,8 +1,17 @@
 import { Telegraf, Markup } from "telegraf";
 import { Command } from ".";
 import { IBotContext } from "../context";
-import { Client as Discogs } from "disconnect";
 import { IDiscogsDatabase } from "../discogs";
+
+type IResultItem = {
+  id: number;
+  title: string;
+  uri: string;
+  thumb: string;
+  year: string;
+  style: string;
+  label: string;
+};
 
 export class InlineQuery extends Command {
   constructor(bot: Telegraf<IBotContext>, db: IDiscogsDatabase) {
@@ -21,14 +30,23 @@ export class InlineQuery extends Command {
         };
       }, {});
 
-      this.db.search(params, async (err, data) => {
+      this.db.search?.(params, async (err, data) => {
         const results = data.results.map(
-          ({ title, uri, id, thumb, year, style, label, ...rest }) => {
+          ({
+            title,
+            uri,
+            id,
+            thumb,
+            year,
+            style,
+            label,
+            ...rest
+          }: IResultItem) => {
             return {
               type: "article",
               id: id,
               title: title,
-              description: `${year}, ${style}, ${label.toString()}`,
+              description: `${year}, ${style}, ${label?.toString()}`,
               thumb_url: thumb,
               input_message_content: {
                 message_text: title,
@@ -42,7 +60,6 @@ export class InlineQuery extends Command {
             };
           }
         );
-
         await context.answerInlineQuery(results).catch((err) => {
           console.log(err);
         });

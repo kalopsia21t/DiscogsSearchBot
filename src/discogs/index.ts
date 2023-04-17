@@ -1,3 +1,9 @@
+type IParams = {
+  title?: string;
+  release_title?: string;
+  style?: string;
+};
+
 export interface IDiscogsDatabase {
-  search?(params: string[], cb: () => void): void;
+  search?(params: IParams, cb: (err: any, data: any) => void): void;
 }
