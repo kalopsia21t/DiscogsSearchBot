@@ -1,4 +1,4 @@
-import { Telegraf, Markup, session } from "telegraf";
+import { Telegraf, session } from "telegraf";
 import { Client as Discogs } from "disconnect";
 
 import { ConfigService, IConfigService } from "./config";
